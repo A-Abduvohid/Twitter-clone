@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { HashtegsService } from './hashtegs.service';
 import { CreateHashtegDto } from './dto/create-hashteg.dto';
 import { UpdateHashtegDto } from './dto/update-hashteg.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('hashtegs')
 @Controller('hashtegs')
 export class HashtegsController {
   constructor(private readonly hashtegsService: HashtegsService) {}

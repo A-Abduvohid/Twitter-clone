@@ -6,11 +6,14 @@ import { CommentsModule } from './comments/comments.module';
 import { MessagesModule } from './messages/messages.module';
 import { HashtegsModule } from './hashtegs/hashtegs.module';
 import { NestConfigModule } from './common/modules/config/config.module';
+import { PrismaService } from './common/modules/prisma/prisma.service';
+import { NestJwtModule } from './common/modules/jwt/jwt.module';
 
 
 @Module({
   imports: [
     NestConfigModule,
+    NestJwtModule,
     AuthModule,
     UsersModule,
     TweetsModule,
@@ -19,6 +22,6 @@ import { NestConfigModule } from './common/modules/config/config.module';
     HashtegsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [PrismaService],
 })
 export class AppModule {}
