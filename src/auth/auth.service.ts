@@ -71,6 +71,71 @@ export class AuthService {
 
   async sign_in(signInUserDto: SignInUserDto) {
     try {
+      const { email, password } = signInUserDto;
+
+      const existUser = await this.prisma.user.findUnique({ where: { email } });
+
+      if (!existUser) {
+        return new HttpException('Invalid Email', HttpStatus.BAD_REQUEST);
+      }
+
+      const checkPassword = await bcrypt.compare(password, existUser.password);
+
+      if (!checkPassword) {
+        return new HttpException('Invalid Password', HttpStatus.BAD_REQUEST);
+      }
+
+      if (existUser.status !== 'ACTIVE') {
+        return new HttpException('User is not ACTIVE', HttpStatus.BAD_REQUEST);
+      }
+
+      const accessTime = this.configService.get<string>('jwt.access_time');
+      const refreshTime = this.configService.get<string>('jwt.refresh_time');
+
+      const accessToken = this.generateToken(
+        {
+          email: existUser.email,
+          username: existUser.username,
+          role: existUser.role,
+        },
+        { expiresIn: accessTime },
+      );
+
+      const refreshToken = this.generateToken(
+        {
+          email: existUser.email,
+          username: existUser.username,
+          role: existUser.role,
+        },
+        { expiresIn: refreshTime },
+      );
+
+      if (!accessToken || !refreshToken) {
+        return new HttpException(
+          'Internal Server Error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      const existRefresh = await this.prisma.refreshToken.findFirst({
+        where: { userId: existUser.id },
+      });
+
+      if (existRefresh) {
+        await this.prisma.refreshToken.update({
+          where: { id: existRefresh.id },
+          data: { token: refreshToken },
+        });
+      } else {
+        await this.prisma.refreshToken.create({
+          data: { userId: existUser.id, token: refreshToken },
+        });
+      }
+
+      return {
+        accessToken,
+        refreshToken,
+      };
     } catch (error) {
       console.log(error);
 
@@ -79,6 +144,13 @@ export class AuthService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  generateToken(
+    payload: { email: string; role: string; username: string },
+    expires: { expiresIn: string },
+  ) {
+    return this.jwtService.sign(payload, expires);
   }
 
   async refresh_token(token: string) {

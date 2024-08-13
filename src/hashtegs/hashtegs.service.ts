@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateHashtegDto } from './dto/create-hashteg.dto';
 import { UpdateHashtegDto } from './dto/update-hashteg.dto';
 
 @Injectable()
 export class HashtegsService {
-  create(createHashtegDto: CreateHashtegDto) {
-    return 'This action adds a new hashteg';
+  async create(createHashtegDto: CreateHashtegDto) {
+    try {
+    } catch (error) {
+      console.log(error);
+
+      return new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  findAll() {
-    return `This action returns all hashtegs`;
+  async findAll() {
+    try {
+    } catch (error) {
+      console.log(error);
+
+      return new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} hashteg`;
+  async findOne(id: number) {
+    try {
+    } catch (error) {
+      console.log(error);
+
+      return new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  update(id: number, updateHashtegDto: UpdateHashtegDto) {
-    return `This action updates a #${id} hashteg`;
+  async update(id: number, updateHashtegDto: UpdateHashtegDto) {
+    try {
+    } catch (error) {
+      console.log(error);
+
+      return new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} hashteg`;
+  async remove(id: number) {
+    try {
+    } catch (error) {
+      console.log(error);
+
+      return new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

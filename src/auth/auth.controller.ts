@@ -14,6 +14,7 @@ export class AuthController {
     return await this.authService.sign_up(createAuthDto);
   }
 
+  @ApiProperty({ type: SignInUserDto })
   @Post('sign-in')
   async sign_in(@Body() signInUserDto: SignInUserDto) {
     return await this.authService.sign_in(signInUserDto);
