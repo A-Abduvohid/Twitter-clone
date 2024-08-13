@@ -18,6 +18,11 @@ enum Role {
   ADMIN
 }
 
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
 model User {
   id           String   @id @default(uuid())
   username     String   @unique
@@ -27,6 +32,7 @@ model User {
   bio          String?
   profile_image String?  // Fayl yuklanganidan keyin saqlanadigan URL
   role         Role     @default(USER)
+  status       Status   @default(INACTIVE)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -39,6 +45,15 @@ model User {
   followers    Follower[] @relation("FollowedUsers")
   following    Follower[] @relation("FollowingUsers")
   refreshTokens RefreshToken[] 
+  Otp Otp[]
+}
+
+model Otp {
+  id           String   @id @default(uuid())
+  otp          Int
+  createdAt    DateTime @default(now())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model RefreshToken {

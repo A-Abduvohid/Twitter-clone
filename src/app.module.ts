@@ -8,12 +8,14 @@ import { HashtegsModule } from './hashtegs/hashtegs.module';
 import { NestConfigModule } from './common/modules/config/config.module';
 import { PrismaService } from './common/modules/prisma/prisma.service';
 import { NestJwtModule } from './common/modules/jwt/jwt.module';
+import { NestMailerModule } from './common/modules/mailer/mailer.module';
 
 
 @Module({
   imports: [
     NestConfigModule,
     NestJwtModule,
+    NestMailerModule,
     AuthModule,
     UsersModule,
     TweetsModule,
