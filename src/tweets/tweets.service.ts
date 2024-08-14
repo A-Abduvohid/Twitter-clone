@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { PrismaService } from 'src/common/modules/prisma/prisma.service';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class TweetsService {
@@ -10,20 +12,18 @@ export class TweetsService {
   async createTweet(
     createTweetDto: CreateTweetDto,
     request: any,
-    imageUrl: string,
+    fileUrl: string | null,
   ) {
     try {
-      const { id } = request.user;
+      const newTweet = {
+        content: createTweetDto.content,
+        image_url: fileUrl,
+        userId: request.user.id,
+      };
 
-      const newTweet = await this.prisma.tweet.create({
-        data: {
-          userId: id,
-          content: createTweetDto.content,
-          image_url: imageUrl,
-        },
+      return await this.prisma.tweet.create({
+        data: newTweet,
       });
-
-      return newTweet;
     } catch (error) {
       console.log(error);
 
@@ -136,7 +136,7 @@ export class TweetsService {
       }
 
       if (request.user.role === 'USER') {
-        if (tweet.userId !== id) {
+        if (tweet.userId !== request.user.id) {
           return new HttpException('Unautorized', HttpStatus.UNAUTHORIZED);
         }
       }
@@ -189,10 +189,23 @@ export class TweetsService {
       const tweet = await this.prisma.tweet.findUnique({ where: { id } });
 
       if (!tweet) {
-        return new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
       }
 
       if (request.user.id === tweet.userId || request.user.role === 'ADMIN') {
+        if (tweet.image_url) {
+          const filePath = path.join(__dirname, '..', '..', tweet.image_url);
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.log("Faylni o'chirishda xatolik yuz berdi:", err);
+            }
+          });
+        }
+
+        await this.prisma.like.deleteMany({
+          where: { tweetId: id },
+        });
+
         await this.prisma.tweet.delete({
           where: { id },
         });
@@ -203,11 +216,10 @@ export class TweetsService {
         };
       }
 
-      return new HttpException('Unautorized', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     } catch (error) {
       console.log(error);
-
-      return new HttpException(
+      throw new HttpException(
         'Internal Server Error',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
