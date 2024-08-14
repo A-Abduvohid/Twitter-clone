@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, RefreshTokenDto, SignInUserDto, VerifyOtpDto } from './dto/create-auth.dto';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Role, Roles } from 'src/common/guards/roles.decorator';
@@ -35,6 +35,7 @@ export class AuthController {
     return await this.authService.refresh_token(refreshTokenDto.token);
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.USER)
   @Get('getMe')
@@ -42,6 +43,7 @@ export class AuthController {
     return await this.authService.getMe(request);
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.USER)
   @Get('logout')

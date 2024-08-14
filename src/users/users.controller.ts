@@ -1,36 +1,62 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Put,
+  Req,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Role, Roles } from 'src/common/guards/roles.decorator';
 
+@ApiBearerAuth()
+@UseGuards(AuthGuard, RolesGuard)
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiProperty({ type: CreateUserDto })
+  @Roles(Role.ADMIN)
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    return await this.usersService.createUser(createUserDto);
   }
 
+  @Roles(Role.ADMIN)
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAllUsers() {
+    return await this.usersService.findAllUsers();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Roles(Role.ADMIN, Role.USER)
+  @Get(':username')
+  async findOneUser(@Param('username') username: string) {
+    return await this.usersService.findOneUser(username);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @ApiProperty({ type: UpdateUserDto })
+  @Roles(Role.ADMIN, Role.USER)
+  @Put(':username')
+  async updateUser(
+    @Param('username') username: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() request: Request
+  ) {
+    return await this.usersService.updateUser(username, updateUserDto, request);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Roles(Role.ADMIN)
+  @Delete(':username')
+  async deleteUser(@Param('username') username: string) {
+    return await this.usersService.deleteUser(username);
   }
 }
