@@ -9,6 +9,8 @@ import { NestConfigModule } from './common/modules/config/config.module';
 import { PrismaService } from './common/modules/prisma/prisma.service';
 import { NestJwtModule } from './common/modules/jwt/jwt.module';
 import { NestMailerModule } from './common/modules/mailer/mailer.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 
 @Module({
@@ -16,6 +18,10 @@ import { NestMailerModule } from './common/modules/mailer/mailer.module';
     NestConfigModule,
     NestJwtModule,
     NestMailerModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/static',
+    }),
     AuthModule,
     UsersModule,
     TweetsModule,
