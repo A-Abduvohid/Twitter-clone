@@ -1,10 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Role, Roles } from 'src/common/guards/roles.decorator';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard, RolesGuard)
@@ -13,28 +22,31 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
+  @Roles(Role.ADMIN, Role.USER)
+  @ApiProperty({ type: CreateMessageDto })
   @Post()
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messagesService.create(createMessageDto);
+  async createMessage(
+    @Body() createMessageDto: CreateMessageDto,
+    @Req() request: Request,
+  ) {
+    return await this.messagesService.createMessage(createMessageDto, request);
   }
 
+  @Roles(Role.ADMIN, Role.USER)
   @Get()
-  findAll() {
-    return this.messagesService.findAll();
+  async findAllMessage(@Req() request: Request) {
+    return await this.messagesService.findAllMessage(request);
   }
 
+  @Roles(Role.ADMIN, Role.USER)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.messagesService.findOne(+id);
+  async findOneMessage(@Param('id') id: string, @Req() request: Request) {
+    return await this.messagesService.findOneMessage(id, request);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(+id, updateMessageDto);
-  }
-
+  @Roles(Role.ADMIN, Role.USER)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messagesService.remove(+id);
+  async deleteMessage(@Param('id') id: string, @Req() request: Request) {
+    return await this.messagesService.deleteMessage(id, request);
   }
 }

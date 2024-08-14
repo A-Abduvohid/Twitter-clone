@@ -84,6 +84,36 @@ export class TweetsService {
     }
   }
 
+  async tweetLike(id: string, request: any) {
+    try {
+      const existLike = await this.prisma.like.findFirst({
+        where: { userId: request.user.id, tweetId: id },
+      });
+
+      if (existLike) {
+        await this.prisma.like.delete({ where: { id: existLike.id } });
+        return {
+          message: 'unlike successfully',
+          statusCode: 200,
+        };
+      }
+
+      await this.prisma.like.create({
+        data: { tweetId: id, userId: request.user.id },
+      });
+      return {
+        message: 'like successfully',
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.log(error);
+      return new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async findOneTweet(id: string, request: any) {
     try {
       const tweet = await this.prisma.tweet.findUnique({

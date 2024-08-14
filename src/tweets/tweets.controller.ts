@@ -75,11 +75,19 @@ export class TweetsController {
     return await this.tweetsService.findAllTweets(request);
   }
 
+  @Roles(Role.ADMIN, Role.USER)
+  @Get('/:id/likes')
+  async tweetLike(@Param('id') id: string, @Req() request: Request) {
+    return await this.tweetsService.tweetLike(id, request);
+  }
+
+  @Roles(Role.ADMIN, Role.USER)
   @Get(':id')
   async findOneTweet(@Param('id') id: string, @Req() request: Request) {
     return await this.tweetsService.findOneTweet(id, request);
   }
 
+  @Roles(Role.ADMIN, Role.USER)
   @Patch(':id')
   async updateTweet(
     @Param('id') id: string,
@@ -89,6 +97,7 @@ export class TweetsController {
     return await this.tweetsService.updateTweet(id, updateTweetDto, request);
   }
 
+  @Roles(Role.ADMIN, Role.USER)
   @Delete(':id')
   async deleteTweet(@Param('id') id: string, @Req() request: Request) {
     return await this.tweetsService.deleteTweet(id, request);
