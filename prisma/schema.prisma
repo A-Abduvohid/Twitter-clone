@@ -39,7 +39,6 @@ model User {
   tweets       Tweet[]
   comments     Comment[]
   likes        Like[]
-  retweets     Retweet[]
   sentMessages    Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
   followers    Follower[] @relation("FollowedUsers")
@@ -75,8 +74,6 @@ model Tweet {
   userId      String
   comments    Comment[]
   likes       Like[]
-  retweets    Retweet[]
-  hashtags    TweetHashtag[]
 }
 
 model Comment {
@@ -111,16 +108,6 @@ model Follower {
   followingId String
 }
 
-model Retweet {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-
-  tweet       Tweet    @relation(fields: [tweetId], references: [id])
-  tweetId     String
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
-}
-
 model Message {
   id          String   @id @default(uuid())
   content     String
@@ -132,20 +119,3 @@ model Message {
   receiverId  String
 }
 
-model Hashtag {
-  id          String   @id @default(uuid())
-  tag         String   @unique
-  createdAt   DateTime @default(now())
-
-  tweets      TweetHashtag[]
-}
-
-model TweetHashtag {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-
-  tweet       Tweet    @relation(fields: [tweetId], references: [id])
-  tweetId     String
-  hashtag     Hashtag  @relation(fields: [hashtagId], references: [id])
-  hashtagId   String
-}

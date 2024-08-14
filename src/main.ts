@@ -15,13 +15,16 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Twitter clone')
-    .setDescription('The Twitter API description')
+    .setDescription(
+      `The Twitter API description \nMy telegram account https://t.me/a_abduvoh1d`)
     .setVersion('1.0')
     .addTag('Twitter')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs/api', app, document);
+
+  app.setGlobalPrefix('api/v1')
 
   await app.listen(port);
 
