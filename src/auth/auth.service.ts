@@ -105,7 +105,7 @@ export class AuthService {
     payload: { email: string; role: string; username: string; id: string },
     expires: { expiresIn: string },
   ) {
-    return this.jwtService.sign(payload, expires);
+    return this.jwtService.sign(payload, { expiresIn: expires.expiresIn });
   }
 
   async verify_otp(verifyOtpDto: VerifyOtpDto) {
@@ -165,20 +165,20 @@ export class AuthService {
 
       const accessToken = this.generateToken(
         {
-          email: decodedUser,
-          role: decodedUser,
-          username: decodedUser,
           id: decodedUser.id,
+          email: decodedUser.email,
+          username: decodedUser.username,
+          role: decodedUser.role,
         },
         { expiresIn: accessTime },
       );
 
       const refreshToken = this.generateToken(
         {
-          email: decodedUser,
-          role: decodedUser,
-          username: decodedUser,
           id: decodedUser.id,
+          email: decodedUser.email,
+          username: decodedUser.username,
+          role: decodedUser.role,
         },
         { expiresIn: refreshTime },
       );
