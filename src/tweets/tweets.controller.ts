@@ -10,8 +10,6 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { TweetsService } from './tweets.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';

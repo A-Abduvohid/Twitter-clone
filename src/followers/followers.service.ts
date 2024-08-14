@@ -34,6 +34,14 @@ export class FollowersService {
             followerId: request.user.id,
             followingId: createFollowerDto.followingId,
           },
+          include: {
+            follower: {
+              select: { email: true, username: true, role: true },
+            },
+            following: {
+              select: { email: true, username: true, role: true },
+            },
+          },
         });
 
         return newFollower;

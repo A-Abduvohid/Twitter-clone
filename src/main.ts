@@ -16,7 +16,8 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Twitter clone')
     .setDescription(
-      `The Twitter API description \nMy telegram account https://t.me/a_abduvoh1d`)
+      `The Twitter-clone rest api project was written by https://t.me/a_abduvoh1d`,
+    )
     .setVersion('1.0')
     .addTag('Twitter')
     .addBearerAuth()

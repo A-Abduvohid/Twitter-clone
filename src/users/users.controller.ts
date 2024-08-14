@@ -6,8 +6,10 @@ import {
   Param,
   Delete,
   UseGuards,
-  Put,
   Req,
+  Patch,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,6 +18,8 @@ import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Role, Roles } from 'src/common/guards/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/common/utils/file-upload';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard, RolesGuard)
@@ -29,6 +33,17 @@ export class UsersController {
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.createUser(createUserDto);
+  }
+
+  @Roles(Role.ADMIN, Role.USER)
+  @UseInterceptors(FileInterceptor('user', { storage: multerOptions.storage }))
+  @Post('image')
+  async createUserImage(
+    @UploadedFile() user: Express.Multer.File,
+    @Req() request: Request,
+  ) {
+    const profile_image = `${user.filename}`;
+    return await this.usersService.createUserImage(profile_image, request);
   }
 
   @Roles(Role.ADMIN)
@@ -45,11 +60,11 @@ export class UsersController {
 
   @ApiProperty({ type: UpdateUserDto })
   @Roles(Role.ADMIN, Role.USER)
-  @Put(':username')
+  @Patch(':username')
   async updateUser(
     @Param('username') username: string,
     @Body() updateUserDto: UpdateUserDto,
-    @Req() request: Request
+    @Req() request: Request,
   ) {
     return await this.usersService.updateUser(username, updateUserDto, request);
   }

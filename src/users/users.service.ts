@@ -13,6 +13,27 @@ export class UsersService {
     private readonly mailerService: MailerService,
   ) {}
 
+  async createUserImage(profile_image: string, request: any) {
+    try {
+      await this.prisma.user.update({
+        where: { id: request.user.id },
+        data: { profile_image },
+      });
+
+      return {
+        message: 'Successfully saved',
+        statusCode: 200,
+      };
+    } catch (error) {
+      console.log(error);
+
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async createUser(createUserDto: any) {
     try {
       const { email, username, password } = createUserDto;
@@ -82,7 +103,13 @@ export class UsersService {
   async findAllUsers() {
     try {
       const users = await this.prisma.user.findMany({
-        select: { id: true, username: true, email: true, role: true },
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          role: true,
+          status: true,
+        },
       });
 
       if (!users) {
@@ -104,7 +131,13 @@ export class UsersService {
     try {
       const existUser = await this.prisma.user.findUnique({
         where: { username },
-        select: { id: true, username: true, email: true, role: true },
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          role: true,
+          status: true,
+        },
       });
 
       if (!existUser) {
