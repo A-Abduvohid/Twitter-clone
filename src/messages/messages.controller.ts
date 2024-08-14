@@ -17,7 +17,7 @@ import { Role, Roles } from 'src/common/guards/roles.decorator';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard, RolesGuard)
-@ApiTags('message')
+@ApiTags('messages')
 @Controller('messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}

@@ -49,9 +49,18 @@ export class CommentsService {
       if (request.user.role === 'USER') {
         allCommit = await this.prisma.comment.findMany({
           where: { userId: request.user.id },
+          include: {
+            tweet: { select: { content: true, image_url: true } },
+            user: { select: { email: true, username: true, role: true } },
+          },
         });
       } else if (request.user.role === 'ADMIN') {
-        allCommit = await this.prisma.comment.findMany({});
+        allCommit = await this.prisma.comment.findMany({
+          include: {
+            tweet: { select: { content: true, image_url: true } },
+            user: { select: { email: true, username: true, role: true } },
+          },
+        });
       }
       if (!allCommit) {
         return new HttpException('Not Found', HttpStatus.NOT_FOUND);
@@ -74,9 +83,19 @@ export class CommentsService {
       if (request.user.role === 'USER') {
         oneCommit = await this.prisma.comment.findUnique({
           where: { userId: request.user.id, id },
+          include: {
+            tweet: { select: { content: true, image_url: true } },
+            user: { select: { email: true, username: true, role: true } },
+          },
         });
       } else if (request.user.role === 'ADMIN') {
-        oneCommit = await this.prisma.comment.findUnique({ where: { id } });
+        oneCommit = await this.prisma.comment.findUnique({
+          where: { id },
+          include: {
+            tweet: { select: { content: true, image_url: true } },
+            user: { select: { email: true, username: true, role: true } },
+          },
+        });
       }
       if (!oneCommit) {
         return new HttpException('Not Found', HttpStatus.NOT_FOUND);
@@ -102,6 +121,10 @@ export class CommentsService {
       const updatedCommit = await this.prisma.comment.update({
         where: { id, userId: request.user.id },
         data: updateCommentDto,
+        include: {
+          tweet: { select: { content: true, image_url: true } },
+          user: { select: { email: true, username: true, role: true } },
+        },
       });
 
       if (!updatedCommit) {

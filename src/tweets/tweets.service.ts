@@ -189,7 +189,7 @@ export class TweetsService {
       const tweet = await this.prisma.tweet.findUnique({ where: { id } });
 
       if (!tweet) {
-        throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        return new HttpException('Not Found', HttpStatus.NOT_FOUND);
       }
 
       if (request.user.id === tweet.userId || request.user.role === 'ADMIN') {
@@ -216,10 +216,10 @@ export class TweetsService {
         };
       }
 
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      return new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     } catch (error) {
       console.log(error);
-      throw new HttpException(
+      return new HttpException(
         'Internal Server Error',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
