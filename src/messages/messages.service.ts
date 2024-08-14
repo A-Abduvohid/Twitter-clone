@@ -8,6 +8,14 @@ export class MessagesService {
 
   async createMessage(createMessageDto: CreateMessageDto, request: any) {
     try {
+      const existReceiver = await this.prisma.user.findUnique({
+        where: { id: createMessageDto.receiverId },
+      });
+
+      if (!existReceiver) {
+        return new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+      }
+
       const newMessage = await this.prisma.message.create({
         data: { senderId: request.user.id, ...createMessageDto },
       });
@@ -101,6 +109,25 @@ export class MessagesService {
 
   async deleteMessage(id: string, request: any) {
     try {
+      const existMessage = await this.prisma.message.findUnique({
+        where: { id },
+      });
+
+      if (!existMessage) {
+        return new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      }
+
+      if (
+        request.user.role !== 'ADMIN' ||
+        existMessage.senderId === request.user.id
+      ) {
+        await this.prisma.message.delete({ where: { id } });
+        return {
+          message: 'Successfully Deleted',
+          statusCode: 200,
+        };
+      }
+      return new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
     } catch (error) {
       console.log(error);
 
