@@ -5,8 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
+
 
 datasource db {
   provider = "postgresql"
@@ -30,6 +32,7 @@ model User {
   password     String
   full_name    String
   bio          String?
+
   profile_image String?  // Fayl yuklanganidan keyin saqlanadigan URL
   role         Role     @default(USER)
   status       Status   @default(INACTIVE)
