@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto, SignInUserDto } from './dto/create-auth.dto';
+import { CreateUserDto, RefreshTokenDto, SignInUserDto, VerifyOtpDto } from './dto/create-auth.dto';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Role, Roles } from 'src/common/guards/roles.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -20,18 +23,29 @@ export class AuthController {
     return await this.authService.sign_in(signInUserDto);
   }
 
+  @ApiProperty({ type: VerifyOtpDto })
+  @Post('verify-otp')
+  async verify_otp(@Body() verifyOtpDto: VerifyOtpDto) {
+    return await this.authService.verify_otp(verifyOtpDto);
+  }
+
+  @ApiProperty({ type: RefreshTokenDto })
   @Post('refresh-token')
-  async refresh_token(@Body() refreshToken: { token: string }) {
-    return await this.authService.refresh_token(refreshToken.token);
+  async refresh_token(@Body() refreshTokenDto: RefreshTokenDto) {
+    return await this.authService.refresh_token(refreshTokenDto.token);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.USER)
   @Get('getMe')
-  async getMe() {
-    return await this.authService.getMe();
+  async getMe(@Req() request: Request) {
+    return await this.authService.getMe(request);
   }
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.USER)
   @Get('logout')
-  async logout() {
-    return await this.authService.logout();
+  async logout(@Req() request: Request) {
+    return await this.authService.logout(request);
   }
 }
