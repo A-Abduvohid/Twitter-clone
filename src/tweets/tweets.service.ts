@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { PrismaService } from 'src/common/modules/prisma/prisma.service';
@@ -7,7 +7,9 @@ import * as path from 'path';
 
 @Injectable()
 export class TweetsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+  ) {}
 
   async createTweet(
     createTweetDto: CreateTweetDto,
