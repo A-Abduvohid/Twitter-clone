@@ -32,9 +32,7 @@ export class TweetsController {
   @ApiProperty({ type: CreateTweetDto })
   @Roles(Role.ADMIN, Role.USER)
   @Post()
-  @UseInterceptors(
-    FileInterceptor('file', { storage: multerOptions.storage }),
-  )
+  @UseInterceptors(FileInterceptor('file', { storage: multerOptions.storage }))
   async createTweet(
     @Body() createTweetDto: CreateTweetDto,
     @Req() request: Request,
