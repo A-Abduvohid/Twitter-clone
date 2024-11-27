@@ -1,6 +1,11 @@
 import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto, RefreshTokenDto, SignInUserDto, VerifyOtpDto } from './dto/create-auth.dto';
+import {
+  CreateUserDto,
+  RefreshTokenDto,
+  SignInUserDto,
+  VerifyOtpDto,
+} from './dto/create-auth.dto';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
